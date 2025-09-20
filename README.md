@@ -1,6 +1,11 @@
 # MoGeV2 TensorRT ROS2 Node
 
 
+
+https://github.com/user-attachments/assets/dc4ed354-59e8-4627-8af0-457371a3895b
+
+
+
 A ROS2 node for [MoGeV2](https://github.com/microsoft/MoGe) depth estimation using TensorRT for real-time inference. This node subscribes to camera image and camera info topics and publishes directly both, a metric depth image and `PointCloud2` point cloud.
 
 
