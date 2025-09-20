@@ -1,0 +1,19 @@
+moge_trt:
+  ros__parameters:
+    # Model configuration
+    onnx_path: "/docker-ros/ws/install/moge_trt/share/moge_trt/models/moge-2_vits_normal_291x518_dynamo_sim.onnx"
+    precision: "fp16"  # fp16 or fp32
+    
+    # Debug configuration
+    enable_debug: true
+    debug_colormap: "JET"  # JET, HOT, COOL, SPRING, SUMMER, AUTUMN, WINTER, BONE, GRAY, HSV, PARULA, PLASMA, INFERNO, VIRIDIS, MAGMA, CIVIDIS
+    debug_filepath: "/tmp/moge_debug/"
+    write_colormap: false
+    debug_colormap_min_depth: 0.0    # Minimum depth value for colormap visualization
+    debug_colormap_max_depth: 50.0   # Maximum depth value for colormap visualization
+    
+    # Point cloud downsampling (1 = no downsampling, 10 = every 10th point)
+    point_cloud_downsample_factor: 5
+    
+    # Point cloud colorization with RGB from input image
+    colorize_point_cloud: true  # Set to true to publish RGB point cloud instead of XYZ only

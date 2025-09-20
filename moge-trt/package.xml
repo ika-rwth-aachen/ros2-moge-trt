@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypeName="packageFormat"?>
+<package format="3">
+  <name>moge_trt</name>
+  <version>0.1.0</version>
+  <description>ROS2 node for MoGeV2 depth estimation using TensorRT</description>
+  <maintainer email="till.beemelmanns@rwth-aachen.de">Till Beemelmanns</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>rclcpp_components</depend>
+  <depend>sensor_msgs</depend>
+  <depend>cv_bridge</depend>
+  <depend>image_transport</depend>
+  <depend>image_transport_plugins</depend>
+  <depend>message_filters</depend>
+  
+  <build_depend>libopencv-dev</build_depend>
+  <exec_depend>libopencv-dev</exec_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
