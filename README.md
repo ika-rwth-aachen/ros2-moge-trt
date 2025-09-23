@@ -156,17 +156,17 @@ each frame to align the point cloud correctly.
 
 This is an optimization problem: find the `shift` that results in the lowest 
 reprojection error. There are two common ways to measure this error: 
-- L2 norm (leading to a least-squares solution) 
-- L1 norm (leading to a least absolute deviations solution).
+- L2 norm (leading to a least-squares solution), which is used in the original MoGe repository
+- L1 norm (leading to a least absolute deviations solution), which we use here for its simplicity and robustness.
 
-#### 1. L2 Norm (Least Squares)
+#### 1. L2 Norm - Least Squares - (Original MoGe Method)
 
 This approach minimizes the **sum of the squares** of the reprojection errors: `min Σ(error)²`.
 
 -   **Key Characteristic**: It is highly sensitive to outliers. If the model produces a few points with very large errors, the squaring of these errors causes them to dominate the calculation. The resulting `shift` will be heavily skewed to accommodate these bad points, often at the expense of a better fit for the majority of good points.
 -   **Implementation**: Typically requires an iterative numerical solver (e.g., Levenberg-Marquardt, used in `scipy.optimize.least_squares`).
 
-#### 2. L1 Norm (Least Absolute Deviations)
+#### 2. L1 Norm - Least Absolute Deviations - (Used in this repository)
 
 This approach minimizes the **sum of the absolute values** of the reprojection errors: `min Σ|error|`.
 
