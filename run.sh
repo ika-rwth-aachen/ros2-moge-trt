@@ -8,8 +8,7 @@ docker-run \
 --ulimit stack=67108864 \
 -it \
 --volume $PWD:/docker-ros/ws/src/target \
---volume /media/beemelmanns/data/bagfiles/:/bags \
-gitlab.ika.rwth-aachen.de:5050/fb-fi/its-modules/perception/moge-trt:latest-dev \
+tillbeemelmanns/ros2-moge-trt:latest-dev \
 bash
 
 
