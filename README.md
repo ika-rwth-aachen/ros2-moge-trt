@@ -24,10 +24,17 @@ A ROS2 node for [MoGeV2](https://github.com/microsoft/MoGe) depth estimation usi
 
 
 ## Dependencies
-- Based on image `nvcr.io/nvidia/tensorrt:25.08-py3`
-- Ubuntu 24.04, ROS2 Jazzy
-- CUDA 13
-- TensorRT 10.9
+- Tested with image `nvcr.io/nvidia/tensorrt:25.08-py3`
+  - Ubuntu 24.04, ROS2 Jazzy
+  - CUDA 13
+  - TensorRT 10.9
+  
+- Tested with image `nvcr.io/nvidia/tensorrt:25.03-py3`
+  - Ubuntu 24.04, ROS2 Jazzy
+  - CUDA 12.8.1
+  - TensorRT 10.9
+
+Depending on your driver and CUDA version you need to select the appropriate base image.
 
 ## Topics
 
