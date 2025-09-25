@@ -2,7 +2,7 @@ include:
   - remote: 'https://raw.githubusercontent.com/ika-rwth-aachen/docker-ros/main/.gitlab-ci/docker-ros.yml'
 
 variables:
-  BASE_IMAGE: nvcr.io/nvidia/tensorrt:25.08-py3
+  BASE_IMAGE: nvcr.io/nvidia/tensorrt:25.03-py3
   ROS_DISTRO: jazzy
   RMW_IMPLEMENTATION: rmw_zenoh_cpp
   COMMAND: ros2 launch moge_trt moge_trt.launch.py
