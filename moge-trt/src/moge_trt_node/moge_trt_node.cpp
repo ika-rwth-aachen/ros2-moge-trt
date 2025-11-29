@@ -239,10 +239,10 @@ void MogeTrtNode::onCompressedImageCameraInfo(
     std::filesystem::path onnx_path(node_param_.onnx_path);
     std::string model_name = onnx_path.filename().string();
     
-    std::string inference_time_text = "MoGe-TRT - " + model_name + 
+    std::string inference_time_text = model_name + 
       " - FPS: " + std::to_string(static_cast<int>(1.0 / mean_inference_time));
     int font_face = cv::FONT_HERSHEY_SIMPLEX;
-    double font_scale = 1.0;
+    double font_scale = 0.50;
     int thickness = 2;
     int baseline = 0;
     cv::Size text_size = cv::getTextSize(

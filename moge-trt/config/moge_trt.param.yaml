@@ -13,7 +13,7 @@ moge_trt:
     debug_colormap_max_depth: 50.0   # Maximum depth value for colormap visualization
     
     # Point cloud downsampling (1 = no downsampling, 10 = every 10th point)
-    point_cloud_downsample_factor: 5
+    point_cloud_downsample_factor: 2
     
     # Point cloud colorization with RGB from input image
     colorize_point_cloud: true  # Set to true to publish RGB point cloud instead of XYZ only

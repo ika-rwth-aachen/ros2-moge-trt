@@ -53,20 +53,20 @@ static bool fileExists(const std::string & file_name, bool verbose = true)
   return true;
 }
 
-// Simple depth to point cloud conversion using camera intrinsics
+// Simple depth to point cloud conversion using pre-scaled camera intrinsics
 void depthImageToPointCloud(
   const cv::Mat & depth_image,
-  const sensor_msgs::msg::CameraInfo & camera_info,
+  float fx, float fy, float cx, float cy,
   sensor_msgs::msg::PointCloud2 & cloud_msg,
   const std::string & frame_id,
-  int downsample_factor = 1,
-  const cv::Mat & rgb_image = cv::Mat())
+  int downsample_factor,
+  const cv::Mat & rgb_image)
 {
   cloud_msg.header.frame_id = frame_id;
   
   // Calculate downsampled dimensions
-  int downsampled_height = (depth_image.rows + downsample_factor - 1) / downsample_factor;
-  int downsampled_width = (depth_image.cols + downsample_factor - 1) / downsample_factor;
+  const int downsampled_height = (depth_image.rows + downsample_factor - 1) / downsample_factor;
+  const int downsampled_width = (depth_image.cols + downsample_factor - 1) / downsample_factor;
   
   cloud_msg.height = downsampled_height;
   cloud_msg.width = downsampled_width;
@@ -74,18 +74,12 @@ void depthImageToPointCloud(
   cloud_msg.is_bigendian = false;
 
   sensor_msgs::PointCloud2Modifier pcd_modifier(cloud_msg);
-  bool has_color = !rgb_image.empty();
+  const bool has_color = !rgb_image.empty();
   if (has_color) {
     pcd_modifier.setPointCloud2FieldsByString(2, "xyz", "rgb");
   } else {
     pcd_modifier.setPointCloud2FieldsByString(1, "xyz");
   }
-
-  // Camera intrinsics
-  double fx = camera_info.k[0]; // K[0]
-  double fy = camera_info.k[4]; // K[4] 
-  double cx = camera_info.k[2]; // K[2]
-  double cy = camera_info.k[5]; // K[5]
 
   sensor_msgs::PointCloud2Iterator<float> iter_x(cloud_msg, "x");
   sensor_msgs::PointCloud2Iterator<float> iter_y(cloud_msg, "y");
@@ -147,9 +141,6 @@ TensorRTMoge::TensorRTMoge(
   const size_t max_workspace_size)
 : batch_size_(batch_config[2]), use_gpu_preprocess_(use_gpu_preprocess)
 {
-  src_width_ = -1;
-  src_height_ = -1;
-
   if (!fileExists(model_path)) {
     throw std::runtime_error("Model file does not exist: " + model_path);
   }
@@ -211,11 +202,8 @@ TensorRTMoge::~TensorRTMoge()
 
 void TensorRTMoge::initPreprocessBuffer(int width, int height)
 {
-  src_width_ = width;
-  src_height_ = height;
-  
   if (use_gpu_preprocess_) {
-    const size_t image_size = src_width_ * src_height_ * 3; // RGB
+    const size_t image_size = width * height * 3; // RGB
     image_buf_h_ = cuda_utils::make_unique_host<unsigned char[]>(
       image_size * batch_size_, cudaHostAllocDefault);
     image_buf_d_ = cuda_utils::make_unique<unsigned char[]>(image_size * batch_size_);
@@ -455,12 +443,8 @@ void TensorRTMoge::postprocess(const sensor_msgs::msg::CameraInfo & camera_info,
         }
     }
 
-    // 5. Resize depth to the original image size
-    if (src_width_ > 0 && src_height_ > 0) {
-        cv::resize(depth_map, depth_image_, cv::Size(src_width_, src_height_), 0, 0, cv::INTER_NEAREST);
-    } else {
-        depth_image_ = depth_map.clone();
-    }
+    // 5. Store depth at model resolution (no upscaling to save compute)
+    depth_image_ = std::move(depth_map);
 
     // 6. Convert the final depth map to a point cloud
     depthToPointCloud(camera_info, downsample_factor, rgb_image);
@@ -470,9 +454,22 @@ void TensorRTMoge::postprocess(const sensor_msgs::msg::CameraInfo & camera_info,
 void TensorRTMoge::depthToPointCloud(const sensor_msgs::msg::CameraInfo & camera_info, int downsample_factor, const cv::Mat & rgb_image)
 {
   const std::string frame_id = camera_info.header.frame_id.empty() ? "camera_link" : camera_info.header.frame_id;
-  depthImageToPointCloud(depth_image_, camera_info, point_cloud_, frame_id, downsample_factor, rgb_image);
   
-  // Set timestamp
+  // Scale camera intrinsics from original image size to model output size
+  const float scale_x = static_cast<float>(depth_image_.cols) / camera_info.width;
+  const float scale_y = static_cast<float>(depth_image_.rows) / camera_info.height;
+  const float fx = camera_info.k[0] * scale_x;
+  const float fy = camera_info.k[4] * scale_y;
+  const float cx = camera_info.k[2] * scale_x;
+  const float cy = camera_info.k[5] * scale_y;
+  
+  // Resize RGB image to match depth if colorizing
+  cv::Mat rgb_resized;
+  if (!rgb_image.empty()) {
+    cv::resize(rgb_image, rgb_resized, depth_image_.size());
+  }
+  
+  depthImageToPointCloud(depth_image_, fx, fy, cx, cy, point_cloud_, frame_id, downsample_factor, rgb_resized);
   point_cloud_.header.stamp = camera_info.header.stamp;
 }
 

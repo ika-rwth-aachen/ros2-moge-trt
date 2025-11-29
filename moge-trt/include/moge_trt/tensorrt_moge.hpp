@@ -166,13 +166,8 @@ private:
   CudaUniquePtrHost<unsigned char[]> image_buf_h_;
   CudaUniquePtr<unsigned char[]> image_buf_d_;
 
-  int src_width_;
-  int src_height_;
   int input_width_ = 518;  // MoGe input width
   int input_height_ = 291; // MoGe input height
-  
-  // Field of view for MoGe
-  float fov_x_ = 74.0f; // degrees
 
   // Results
   cv::Mat depth_image_;
