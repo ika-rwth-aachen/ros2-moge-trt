@@ -219,6 +219,18 @@ write_colormap: true
 
 This will publish colorized depth images and save them to disk for inspection.
 
+## Citation
+If you use this code in your research, please cite the following:
+
+```bibtex
+@misc{beemelmanns2024moge,
+  author = {Till Beemelmanns},
+  title = {ros2-moge-trt: ROS2 TensorRT Node for Monocular Metric Depth estimation and Point Cloud generation from camera images.},
+  year = {2025},
+  publisher = {GitHub},
+  url = {https://github.com/ika-rwth-aachen/ros2-moge-trt}
+}
+```
 
 ## License
 
